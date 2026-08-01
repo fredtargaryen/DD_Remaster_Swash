@@ -28,6 +28,8 @@ public class RemastereSwashbucklerLoader
 
         bool _ = ModManager.TryParse("Swashbuckler", out FeatName LegacySwashbuckler);
         ClassSelectionFeat swashClass = (ClassSelectionFeat) AllFeats.GetFeatByFeatName(LegacySwashbuckler);
-        RemasteredSwashbuckler.AddRascal(swashClass);
+        _ = ModManager.TryParse("SwashTraitDedication", out FeatName LegacySwashbucklerDedication);
+        Feat swashDeddy = AllFeats.GetFeatByFeatName(LegacySwashbucklerDedication);
+        RemasteredSwashbuckler.AddRascal(swashClass, swashDeddy);
     }
 }

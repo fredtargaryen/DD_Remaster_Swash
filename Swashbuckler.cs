@@ -879,11 +879,18 @@ public class RemasteredSwashbuckler
         });
     }
 
-    public static void AddRascal(ClassSelectionFeat swashClassFeat)
+    private static string RascalFlavourText = "You aren't afraid to use underhanded tactics to get the edge over your opponents.";
+
+    /// <summary>
+    /// Add the Rascal style as selectable options 
+    /// </summary>
+    /// <param name="swashClassFeat">The Feat representing the Swashbuckler class</param>
+    /// <param name="swashDeddy">The Swashbuckler Dedication feat</param>
+    public static void AddRascal(ClassSelectionFeat swashClassFeat, Feat swashDeddy)
     {
         Feat rascalStyle = new AddSwash.SwashbucklerStyle(
             RemasteredSwashbucklerFeatNames.RascalStyle,
-            "You aren't afraid to use underhanded tactics to get the edge over your opponents.",
+            RascalFlavourText,
             "You are trained in Thievery and gain the Dirty Trick general feat. When you use Dirty Trick, the action gains the bravado trait, allowing you to gain panache on any result aside from a critical failure. If the result is a failure, your panache only lasts until the end of your next turn.",
             "When you hit with a finisher, the foe takes a -10 circumstance penalty to its speed until the start of your next turn.",
             Skill.Thievery,
@@ -919,6 +926,33 @@ public class RemasteredSwashbuckler
         ModManager.AddFeat(rascalStyle);
 
         swashClassFeat.Subfeats.Insert(swashClassFeat.Subfeats.Count - 1, rascalStyle);
+
+        Feat rascalStyleArchetype = new Feat(
+            ModManager.RegisterFeatName("RascalForArchetype", "Rascal"),
+            RascalFlavourText,
+            "You can choose to become trained in Thievery. You gain panache whenever you successfully use Dirty Trick.",
+            [],
+            null            
+        )
+        .WithOnSheet(sheet =>
+        {
+            sheet.TrainInThisOrThisOrSubstitute(Skill.Acrobatics, Skill.Thievery);
+            sheet.AddFeatForPurposesOfPrerequisitesOnly(rascalStyle);
+        })
+        .WithPermanentQEffect(null, qf =>
+        {
+            qf.CharacterSheetBecomesCreature = (sheet, creature) =>
+            {
+                QEffect panacheGranter = creature.QEffects.First((fct) => fct.Key == "PanacheGranter");
+                List<ActionId> list = (List<ActionId>)panacheGranter.Tag!;
+                list.Add(Other.DirtyTrickActionId);
+                panacheGranter.Description += ", Dirty Trick";
+            };
+        });
+
+        ModManager.AddFeat(rascalStyleArchetype);
+
+        swashDeddy.Subfeats!.Insert(swashDeddy.Subfeats.Count - 1, rascalStyleArchetype);
     }
 
     /// <summary>
