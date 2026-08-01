@@ -62,11 +62,7 @@ public class Other
                 }
                 if (!target.EnemyOf(user))
                 {
-                    return Usability.NotUsableOnThisCreature("Dirty Trick must target an opponent.");
-                }
-                if (target.DistanceTo(user) > user.UnarmedStrike.DetermineReach(user))
-                {
-                    return Usability.CommonReasons.TargetOutOfReach;
+                    return Usability.NotUsableOnThisCreature("Dirty Trick must target an opponent");
                 }
                 return Usability.Usable;
             })
